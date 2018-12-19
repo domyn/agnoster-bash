@@ -221,7 +221,12 @@ prompt_virtualenv() {
 # Context: user@hostname (who am I and where am I)
 prompt_context() {
     local user=`whoami`
-    prompt_segment black default "$user@\h"
+
+    if [ $user = 'root' ]; then
+        prompt_segment red black "$user@\h"
+    else
+        prompt_segment black default "$user@\h"
+    fi
 }
 
 # prints history followed by HH:MM, useful for remembering what
