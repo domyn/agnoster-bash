@@ -221,10 +221,7 @@ prompt_virtualenv() {
 # Context: user@hostname (who am I and where am I)
 prompt_context() {
     local user=`whoami`
-
-    if [[ $user != $DEFAULT_USER || -n $SSH_CLIENT ]]; then
-        prompt_segment black default "$user@\h"
-    fi
+    prompt_segment black default "$user@\h"
 }
 
 # prints history followed by HH:MM, useful for remembering what
@@ -253,6 +250,11 @@ prompt_git() {
         fi
         PR="$PR${ref/refs\/heads\// }$dirty"
     fi
+}
+
+# Time: current time (HH:MM:SS)
+prompt_time() {
+    prompt_segment black cyan '\t'
 }
 
 # Dir: current working directory
@@ -392,9 +394,8 @@ prompt_emacsdir() {
 ## Main prompt
 
 build_prompt() {
-    [[ ! -z ${AG_EMACS_DIR+x} ]] && prompt_emacsdir
+    prompt_time
     prompt_status
-    #[[ -z ${AG_NO_HIST+x} ]] && prompt_histdt
     [[ -z ${AG_NO_CONTEXT+x} ]] && prompt_context
     prompt_virtualenv
     prompt_dir
@@ -418,6 +419,14 @@ set_bash_prompt() {
     # uncomment below to use right prompt
     #     PS1='\[$(tput sc; printf "%*s" $COLUMNS "$PRIGHT"; tput rc)\]'$PR
     PS1=$PR
+
+    case "$TERM" in
+    xterm*|rxvt*)
+        PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+        ;;
+    *)
+        ;;
+    esac
 }
 
 PROMPT_COMMAND=set_bash_prompt
