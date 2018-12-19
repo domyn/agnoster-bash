@@ -418,15 +418,7 @@ set_bash_prompt() {
 
     # uncomment below to use right prompt
     #     PS1='\[$(tput sc; printf "%*s" $COLUMNS "$PRIGHT"; tput rc)\]'$PR
-    PS1=$PR
-
-    case "$TERM" in
-    xterm*|rxvt*)
-        PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-        ;;
-    *)
-        ;;
-    esac
+    PS1="\[\e]0;\u@\h: \w\a\]$PR"
 }
 
 PROMPT_COMMAND=set_bash_prompt
