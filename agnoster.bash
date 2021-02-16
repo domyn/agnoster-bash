@@ -237,8 +237,13 @@ prompt_histdt() {
 
 
 git_status_dirty() {
-    dirty=$(git status -s 2> /dev/null | tail -n 1)
+    dirty=$(git status -s -uno 2> /dev/null | tail -n 1)
     [[ -n $dirty ]] && echo " ●"
+}
+
+git_status_untracked() {
+    dirty=$(git status -s 2> /dev/null | grep '^??' | tail -n 1)
+    [[ -n $dirty ]] && echo " ❗"
 }
 
 # Git: branch/detached head, dirty status
@@ -247,13 +252,14 @@ prompt_git() {
     if $(git rev-parse --is-inside-work-tree >/dev/null 2>&1); then
         ZSH_THEME_GIT_PROMPT_DIRTY='±'
         dirty=$(git_status_dirty)
+        untracked=$(git_status_untracked)
         ref=$(git symbolic-ref HEAD 2> /dev/null) || ref="➦ $(git show-ref --head -s --abbrev |head -n1 2> /dev/null)"
         if [[ -n $dirty ]]; then
             prompt_segment yellow black
         else
             prompt_segment green black
         fi
-        PR="$PR${ref/refs\/heads\// }$dirty"
+        PR="$PR${ref/refs\/heads\// }$dirty$untracked"
     fi
 }
 
